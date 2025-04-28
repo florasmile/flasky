@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, make_response, request
+from flask import Blueprint, abort, make_response, request, Response
 from ..db import db
 from app.models.cat import Cat
 
@@ -72,7 +72,21 @@ def validate_cat(id):
     # for cat in cats:
     #     if cat.id == id:
     #         return cat
-  
+@cats_bp.put("/<id>")
+def update_cat(id):
+    cat = validate_cat(id)
+
+    request_body = request.get_json() 
+
+    cat.name = request_body["name"]
+    cat.color = request_body["color"]
+    cat.personality = request_body["personality"]
+
+    db.session.commit()
+
+    return Response(status=204, mimetype="application/json")
+
+
 
 
 
