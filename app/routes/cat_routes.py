@@ -86,7 +86,15 @@ def update_cat(id):
 
     return Response(status=204, mimetype="application/json")
 
+@cats_bp.delete("/<id>")
+def delete_cat(id):
+    cat = validate_cat(id)
 
+    db.session.delete(cat)
+
+    db.session.commit()
+
+    return Response(status=204, mimetype="application/json")
 
 
 
