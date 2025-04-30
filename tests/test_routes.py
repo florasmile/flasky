@@ -1,3 +1,6 @@
+from app.db import db
+from app.models.cat import Cat
+
 def test_get_all_cats_returns_empty_list_when_db_is_empty(client):
     #act
     response = client.get("/cats")
@@ -30,12 +33,18 @@ def test_create_cat_happy_path(client):
     response = client.post("/cats", json=EXPECTED_CAT)
     response_body = response.get_json()
   
-      # assert
+    # assert
     assert response.status_code == 201
     assert response_body["id"] == 1
     assert response_body["name"] == EXPECTED_CAT["name"]
     assert response_body["color"] == EXPECTED_CAT["color"]
     assert response_body["personality"] == EXPECTED_CAT["personality"]
 
-    # query = db.select(Cat).where(Cat == 1)
-    # new_cat = db.session.scalars()
+    # further check that the DB was actually updated
+    query = db.select(Cat).where(Cat.id == 1)
+    new_cat = db.session.scalar(query) # compare values to expected
+
+    assert new_cat.id == 1
+    assert new_cat.name == EXPECTED_CAT["name"]
+    assert new_cat.color == EXPECTED_CAT["color"]
+    assert new_cat.personality == EXPECTED_CAT["personality"]
