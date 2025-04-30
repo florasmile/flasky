@@ -1,6 +1,8 @@
 from flask import Blueprint, abort, make_response, request, Response
+from sqlalchemy import or_
 from ..db import db
 from app.models.cat import Cat
+
 
 cats_bp = Blueprint("cats_bp", __name__, url_prefix = "/cats")
 
@@ -27,7 +29,22 @@ def create_cat():
 
 @cats_bp.get("")
 def get_all_cats():
-    query = db.select(Cat).order_by(Cat.id)
+    query = db.select(Cat)
+    name_param = request.args.get("name")
+    if name_param:
+        query = query.where(
+            Cat.name == name_param
+            )
+    color_param = request.args.get("color")
+    if color_param:
+        query = query.where(
+             or_(
+                 Cat.color.ilike(f"%{color_param}%")
+                 )
+        )
+
+    query = query.order_by(Cat.id)
+
     cats = db.session.scalars(query)
 
     cats_response = []
