@@ -6,3 +6,21 @@ class Cat(db.Model):
     name: Mapped[str]
     color: Mapped[str]
     personality: Mapped[str]
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "color": self.color,
+            "personality": self.personality
+        }
+    
+    @classmethod
+    def from_dict(cls, cat_data):
+        return cls(
+            name=cat_data["name"],
+            color=cat_data["color"],
+            personality=cat_data["description"]
+        )
+
+    
